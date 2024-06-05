@@ -6,7 +6,7 @@ from datetime import datetime
 class User(CRUD):
 
     storage = {}
-    def __init__(self, id, first_name, last_name, email, password, hosted_places, reviews):
+    def __init__(self, first_name, last_name, email, password):
 
         self.id = str(uuid.UUID4())
         self.first_name = first_name
