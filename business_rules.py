@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-Set of rules to define the business rules of the website
+Set of rules to define the business rules of the website -> we don't need them as a simple document 
+but we need to put them in the managments files and in the unitest doc.
 """
 
 # Dictionary to store user's email
@@ -57,36 +58,3 @@ class Actions:
     @rule_action(params={"review": FIELD_NUMERIC})   # add review to the review list
     def add_review(self, review):
         review.place.reviews.append(review)
-
-
-# Define the rules
-rules = [
-    {
-        "conditions": {
-            "all": [
-                {"name": "unique_email", "operator": "is_true"},
-            ]
-        },
-        "actions": [
-            {"name": "add_user", "params": {"user": FIELD_NUMERIC}},
-        ],
-    },
-    {
-        "conditions": {
-            "all": [
-                {"name": "aplace_ahost", "operator": "is_false"},
-            ]
-        },
-        "actions": [
-            {"name": "assign_host", "params": {"place": FIELD_NUMERIC, "user": FIELD_NUMERIC}},
-        ],
-    },
-    {
-        "conditions": {
-            "all": [
-                {"name": "host_reviews", "operator": "is_false"},
-            ]
-        },
-        "actions": [],  # No action, review is not allowed
-    },
-]
