@@ -25,12 +25,12 @@ class Review(CRUD):
         return review
 
     @classmethod
-    def read(cls, object_id):
-        return cls.storage.get(object_id)
+    def read(cls, id):
+        return cls.storage.get(id)
 
     @classmethod
-    def update(cls, object_id, data):
-        review = cls.storage.get(object_id)
+    def update(cls, id, data):
+        review = cls.storage.get(id)
         if review:
             for key, value in data.items():
                 if hasattr(review, key):
@@ -40,5 +40,5 @@ class Review(CRUD):
         return None
 
     @classmethod
-    def delete(cls, object_id):
-        return cls.storage.pop(object_id, None)
+    def delete(cls, id):
+        return cls.storage.pop(id, None)
