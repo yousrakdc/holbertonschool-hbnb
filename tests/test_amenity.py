@@ -3,6 +3,10 @@
 import unittest
 from models.amenity import Amenity
 
+# Test : created_at is set during creation of a new amenity
+
+# Test : updated_at is set during edition of the amenity 
+
 # Test: creating an amenity with an empty name
 
 # Test: creating an amenity with a real name 
