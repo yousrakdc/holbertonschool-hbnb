@@ -3,19 +3,23 @@ from abc import ABC, abstractmethod
 
 
 class IPersistenceManager(ABC):
+    # Save the given entity
     @abstractmethod
     def save(self, entity):
         pass
 
     @abstractmethod
+    # Retrieve an entity by its ID and type
     def get(self, entity_id, entity_type):
         pass
 
     @abstractmethod
+    # Update the given entity
     def update(self, entity):
         pass
 
     @abstractmethod
+    # Delete an entity by its ID and type
     def delete(self, entity_id, entity_type):
         pass
 
