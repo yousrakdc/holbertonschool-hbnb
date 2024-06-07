@@ -49,19 +49,38 @@ class User(CRUD):
 
     @classmethod
     def read(cls, id):
-        return cls.storage.get(id)
-
-    @classmethod
-    def update(cls, id, data):
-        user = cls.storage.get(id)
-        if user:
-            for key, value in data.items():
-                if hasattr(User, key):
-                    setattr(User, key, value)
-            user.updated_at = datetime.utcnow()
-            return user
+        try:
+            with open("users.json", "r") as file:
+                users = json.load(file)
+                for user in users:
+                    if user["id"] == id:
+                        return user
+        except FileNotFoundError:
+            return None
         return None
 
     @classmethod
+    def update(cls, id, data):
+        try:
+            with open("users.json", "r") as file:
+                users = json.load(file)
+                for user in users:
+                    if user["id"] == id:
+                        for key, value in data.items():
+                            if key in user:
+                                user[key] = value
+                        user["updated_at"] = datetime.utcnow().isoformat()
+                        break
+                else:
+                    return None
+        except FileNotFoundError:
+            return None
+
+    @classmethod
     def delete(cls, id):
-        return cls.storage.pop(id, None)
+        try:
+            with open("users.json", "r") as file:
+                users = json.load(file)
+                users = [user for user in users if user["id"] != id]
+        except FileNotFoundError:
+            return None
