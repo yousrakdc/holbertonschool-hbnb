@@ -6,50 +6,62 @@ from datetime import datetime
 
 class User(CRUD):
 
-	def __init__(self, first_name, last_name, email, password):
+    def __init__(self, first_name, last_name, email, password):
 
-		self.id = str(uuid.uuid4())
-		self.first_name = first_name
-		self.last_name = last_name
-		self.email = email
-		self.password = password
-		self.hosted_places = []
-		self.reviews = []
-		self.created_at = datetime.utcnow()
-		self.updated_at = datetime.utcnow()
-	
-	def __repr__(self):
-		return f"ID:{self.id}: {self.last_name}_{self.first_name}<{self.email}>"
-	
-	@classmethod
-	def create(self, data):   #check if the email is already in the json file
-		with user.json as file:
-			emails = [user["email"] for user in json.load(file)]   # i may have confuse email and emails here...
-			if self.email in emails:
-				raise ValueError(f"Email '{self.email}' is already taken.")
-			else:
-				with open("users.json", "r+") as file: #   add the email if its ok
-					user = json.load(file)
-					user.append({"email": email})
-					file.seek(0)
-					json.dump(user, file, indent=4)  
+        self.id = str(uuid.uuid4())
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.password = password
+        self.hosted_places = []
+        self.reviews = []
+        self.created_at = datetime.utcnow()
+        self.updated_at = datetime.utcnow()
 
+    def __repr__(self):
+        return f"ID:{self.id}:\
+            {self.last_name}_{self.first_name}<{self.email}>"
 
-	@classmethod
-	def read(cls, id):
-		return cls.storage.get(id)
+    @classmethod
+    def create(cls, data):
+        email = data.get("email")   # import json data for email
+        if not email:   # check if email exists
+            raise ValueError("Email is required.")
+            # check the one email per user rule
+        with open("users.json", "r") as file:
+            users = json.load(file)
+            emails = [user["email"] for user in users]
+            if email in emails:
+                raise ValueError(f"Email '{email}' is already taken.")
+            else:   # create a new user
+                new_user = {
+                            "id": str(uuid.uuid4()),
+                            "first_name": data.get("first_name"),
+                            "last_name": data.get("last_name"),
+                            "email": email,
+                            "password": data.get("password"),
+                            "hosted_places": [],
+                            "reviews": [],
+                            "created_at": datetime.utcnow().isoformat(),
+                            "updated_at": datetime.utcnow().isoformat()
+                        }
+                return new_user
 
-	@classmethod
-	def update(cls, id, data):
-		user = cls.storage.get(id)
-		if user:
-			for key, value in data.items():
-				if hasattr(User, key):
-					setattr(User, key, value)
-			user.updated_at = datetime.utcnow()
-			return user
-		return None
-	
-	@classmethod
-	def delete(cls, id):
-		return cls.storage.pop(id, None)
+    @classmethod
+    def read(cls, id):
+        return cls.storage.get(id)
+
+    @classmethod
+    def update(cls, id, data):
+        user = cls.storage.get(id)
+        if user:
+            for key, value in data.items():
+                if hasattr(User, key):
+                    setattr(User, key, value)
+            user.updated_at = datetime.utcnow()
+            return user
+        return None
+
+    @classmethod
+    def delete(cls, id):
+        return cls.storage.pop(id, None)
