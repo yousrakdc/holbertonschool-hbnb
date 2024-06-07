@@ -32,7 +32,7 @@ class Place(CRUD):
             Price per night= {self.price_per_night}"
 
     @classmethod
-    def create(self, data):
+    def create(cls, data):
         host = data.get("host")
         if not host:   # check if palce have 1 host
             raise ValueError("Host is required to create a place.")
