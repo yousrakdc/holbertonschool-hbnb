@@ -20,6 +20,19 @@ class User(CRUD):
     
     def __repr__(self):
         return f"ID:{self.id}: {self.last_name}_{self.first_name}<{self.email}>"
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+            'password': self.password,
+            'hosted_places': self.hosted_places,
+            'reviews': self.reviews,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
     
     @classmethod
     def create(self, data):
