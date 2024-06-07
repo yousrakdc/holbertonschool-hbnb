@@ -2,6 +2,11 @@ from abc import ABC, abstractmethod
 from typing import Dict, Any, Type
 
 
+class TestEntity:
+    def __init__(self, name):
+        self.name = name
+
+
 class IPersistenceManager(ABC):
     @abstractmethod
     def save(self, entity: Any) -> None:
@@ -59,7 +64,7 @@ class DataManager(IPersistenceManager):
         entity_id = id(entity)
 
         if entity_type not in self.storage or entity_id not in self.storage[entity_type]:
-            raise KeyError(f"Entity of type {entity_type} with ID {entity_id} not found.")
+            raise KeyError(f"Entity not found.")
 
         self.storage[entity_type][entity_id] = entity
 
@@ -68,6 +73,5 @@ class DataManager(IPersistenceManager):
         Delete an entity from the storage by its ID and type.
         """
         if entity_type not in self.storage or entity_id not in self.storage[entity_type]:
-            raise KeyError(f"Entity of type {entity_type} with ID {entity_id} not found.")
-
+            raise KeyError(f"Entity not found.")
         del self.storage[entity_type][entity_id]
