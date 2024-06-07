@@ -1,77 +1,55 @@
-from abc import ABC, abstractmethod
 from typing import Dict, Any, Type
 
 
+# Class representing a test entity with a name attribute
 class TestEntity:
-    def __init__(self, name):
+    def __init__(self, name: str) -> None:
         self.name = name
 
+# DataManager class to manage saving, retrieving, updating, & deleting entities
 
-class IPersistenceManager(ABC):
-    @abstractmethod
+
+class DataManager:
+    def __init__(self) -> None:
+        # Storage dictionary where the key is the entity type and the value is
+        # another dictionary with entity IDs as keys and entities as values
+        self.storage: Dict[Type, Dict[int, Any]] = {}
+
+    # Method to save an entity in the storage
     def save(self, entity: Any) -> None:
-        """saves an entity to storage"""
-        pass
-
-    @abstractmethod
-    def get(self, entity: Any, entity_type: Type) -> Any:
-        """get the entity and gets its ID"""
-        pass
-
-    @abstractmethod
-    def update(self, entity: Any) -> None:
-        """Update an existing entity in storage """
-        pass
-
-    @abstractmethod
-    def delete(self, entity: Any, entity_type: Type) -> None:
-        """delete an existing entity in storage"""
-        pass
-
-
-class DataManager(IPersistenceManager):
-    """
-    Implementation of the PersistenceManager interface.
-    This class handles CRUD operations for various entity types.
-    """
-    def __init__(self, storage: Dict[Type, Dict[Any, Any]] = None):
-        self.storage = storage or {}
-
-    def save(self, entity: Any) -> None:
-        """save an entity to storage"""
         entity_type = type(entity)
         entity_id = id(entity)
-
+        # Initialize storage for this entity type if not already done
         if entity_type not in self.storage:
             self.storage[entity_type] = {}
-
+        # Save the entity in the storage
         self.storage[entity_type][entity_id] = entity
 
-    def get(self, entity_id: Any, entity_type: Type) -> Any:
-        """
-        Retrieve an entity from the storage by its ID and type.
-        """
-        if entity_type not in self.storage or entity_id not in self.storage[entity_id]:
-            raise KeyError
-
+    # Method to get an entity from the storage by its ID and type
+    def get(self, entity_id: int, entity_type: Type) -> Any:
+        # Check if the entity type and ID exist in the storage
+        if (entity_type not in self.storage or
+                entity_id not in self.storage[entity_type]):
+            raise KeyError("Entity not found")
+        # Return the entity
         return self.storage[entity_type][entity_id]
 
+    # Method to update an existing entity in the storage
     def update(self, entity: Any) -> None:
-        """
-        Update an existing entity in the storage.
-        """
         entity_type = type(entity)
         entity_id = id(entity)
-
-        if entity_type not in self.storage or entity_id not in self.storage[entity_type]:
-            raise KeyError(f"Entity not found.")
-
+        # Check if the entity type and ID exist in the storage
+        if (entity_type not in self.storage or
+                entity_id not in self.storage[entity_type]):
+            raise KeyError("Entity not found")
+        # Update the entity in the storage
         self.storage[entity_type][entity_id] = entity
 
-    def delete(self, entity_id: Any, entity_type: Type) -> None:
-        """
-        Delete an entity from the storage by its ID and type.
-        """
-        if entity_type not in self.storage or entity_id not in self.storage[entity_type]:
-            raise KeyError(f"Entity not found.")
+    # Method to delete an entity from the storage by its ID and type
+    def delete(self, entity_id: int, entity_type: Type) -> None:
+        # Check if the entity type and ID exist in the storage
+        if (entity_type not in self.storage or
+                entity_id not in self.storage[entity_type]):
+            raise KeyError("Entity not found")
+        # Delete the entity from the storage
         del self.storage[entity_type][entity_id]
