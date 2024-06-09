@@ -41,7 +41,11 @@ class TestUser(unittest.TestCase):
 if __name__ == "__main__":
     unittest.main()
 
-# Check if the ID ALWAYS stays the same
+# Check if the ID ALWAYS stays the same 
+
+# test the updated/ created at 
+
+# test if user can be updated
 
 # Check if the created_at value ALWAYS stays the same after creation and updating
 # (for example after update_at changes)
