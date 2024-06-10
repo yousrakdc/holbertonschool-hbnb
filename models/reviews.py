@@ -24,7 +24,7 @@ class Review(CRUD):
         place = data.get("place")
 
         if user and place:
-            if place.host == user:
+            if place.get("host") == user:
                 raise ValueError("A host cannot review their own place.")
         else:
             review = Review(**data)
