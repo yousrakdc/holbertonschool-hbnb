@@ -10,19 +10,19 @@ class TestUser(unittest.TestCase):
         """Set up a clean env for each test"""
         User.storage = {}
     
-    def test_create_user_success(self, mock_file):
-        """test successful user creation"""
+    def test_create_user_success(self):
+        """Test successful user creation"""
         data = {
             "first_name": "John",
             "last_name": "Doe",
-            "email":"john.doe@example.com",
-            "password":"password1234"
+            "email": "john.doe@example.com",
+            "password": "password1234"
         }
         user = User.create(data)
         self.assertEqual(user.first_name, "John")
         self.assertEqual(user.last_name, "Doe")
         self.assertEqual(user.email, "john.doe@example.com")
-        self.assertin(user.id, User.storage)
+        self.assertIn(user.id, User.storage)
         
         # Ensure created_at and updated_at are set correctly
         self.assertIsInstance(user.created_at, datetime)
@@ -31,14 +31,14 @@ class TestUser(unittest.TestCase):
     def test_create_user_no_email(self):
         """Test user creation without an email, expecting a ValueError."""
         data = {
-              "first_name": "John",
-              "last_name": "Doe",
-             "password": "password123"
-             }
+            "first_name": "John",
+            "last_name": "Doe",
+            "password": "password123"
+        }
     
         with self.assertRaises(ValueError) as context:
             User.create(data)
-        self.assertTrue("Email us required" in str(context.exception))
+        self.assertTrue("Email is required" in str(context.exception))
     
     def test_create_user_invalid_email(self):
         """Test user creation with an invalid email, expecting a ValueError."""
@@ -52,7 +52,7 @@ class TestUser(unittest.TestCase):
             User.create(data)
         self.assertTrue('Invalid email format.' in str(context.exception))
         
-    def create_user_email_exists(self):
+    def test_create_user_email_exists(self):
         """Test user creation with an existing email, expecting a ValueError."""
         data = {
             "first_name": "John",
@@ -77,7 +77,7 @@ class TestUser(unittest.TestCase):
         user = User.read(created_user.id)
         self.assertEqual(user.first_name, "John")
         self.assertEqual(user.last_name, "Doe")
-        self.assertEqual(user.email,"john.doe@example.com")
+        self.assertEqual(user.email, "john.doe@example.com")
         
     def test_read_user_not_found(self):
         """Test reading a non-existent user."""
