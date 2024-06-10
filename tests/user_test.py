@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import mock_open, patch
-from models.user import User
 from datetime import datetime
+from models.user import User
 
 
 class TestUser(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestUser(unittest.TestCase):
               "first_name": "John",
               "last_name": "Doe",
              "password": "password123"
-     }
+             }
     
         with self.assertRaises(ValueError) as context:
             User.create(data)
@@ -114,5 +114,6 @@ class TestUser(unittest.TestCase):
         self.assertNotIn(created_user.id, User.storage)
 
 
+# Run the unit tests
 if __name__ == '__main__':
     unittest.main()
