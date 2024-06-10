@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from typing import Dict, Any, Type
 from abc import ABC, abstractmethod
 
