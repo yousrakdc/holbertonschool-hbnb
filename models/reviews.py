@@ -26,10 +26,10 @@ class Review(CRUD):
         if user and place:
             if place.host == user:
                 raise ValueError("A host cannot review their own place.")
-
-        review = Review(**data)
-        cls.storage[review.id] = review
-        return review
+        else:
+            review = Review(**data)
+            cls.storage[review.id] = review
+            return review
 
     @classmethod
     def read(cls, id):
