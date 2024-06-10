@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from models import place, city, amenity
 from uuid import UUID
-import re
 
 app = Flask(__name__)
 
