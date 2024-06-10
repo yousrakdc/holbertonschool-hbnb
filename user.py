@@ -37,7 +37,7 @@ class User(CRUD):
     @classmethod
     def create(self, data):
         user = User(**data)
-        User.storage[User.id] = user
+        User.storage[user.id] = user
         return user
 
     @classmethod
