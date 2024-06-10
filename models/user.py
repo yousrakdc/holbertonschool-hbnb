@@ -2,12 +2,12 @@
 
 from .crud import CRUD
 import uuid
-import json   # json deroulo
 from datetime import datetime
 
 
 class User(CRUD):
 
+    storage = {}
     def __init__(self, first_name, last_name, email, password):
 
         self.id = str(uuid.uuid4())
@@ -19,70 +19,52 @@ class User(CRUD):
         self.reviews = []
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
-
+    
     def __repr__(self):
-        return f"ID:{self.id}:\
-            {self.last_name}_{self.first_name}<{self.email}>"
+        return f"ID:{self.id}: {self.last_name}_{self.first_name}<{self.email}>"
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'email': self.email,
+            'password': self.password,
+            'hosted_places': self.hosted_places,
+            'reviews': self.reviews,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
+    
     @classmethod
     def create(cls, data):
-        email = data.get("email")   # import json data for email
-        if not email:   # check if email exists
+        email = data.get("email")
+        if not email:
             raise ValueError("Email is required.")
-            # check the one email per user rule
-        with open("users.json", "r") as file:
-            users = json.load(file)
-            emails = [user["email"] for user in users]
-            if email in emails:
-                raise ValueError(f"Email '{email}' is already taken.")
-            else:   # create a new user
-                new_user = {
-                            "id": str(uuid.uuid4()),
-                            "first_name": data.get("first_name"),
-                            "last_name": data.get("last_name"),
-                            "email": email,
-                            "password": data.get("password"),
-                            "hosted_places": [],
-                            "reviews": [],
-                            "created_at": datetime.utcnow().isoformat(),
-                            "updated_at": datetime.utcnow().isoformat()
-                        }
-                return new_user
-
+        if not cls.is_valid_email(email):
+            raise ValueError("Invalid email format.")
+        if cls.email_exists(email):
+            raise ValueError(f"Email '{email}' is already taken.")
+        else:
+            user = User(**data)
+            cls.storage[user.id] = user
+            return user
+    
     @classmethod
     def read(cls, id):
-        try:
-            with open("users.json", "r") as file:
-                users = json.load(file)
-                for user in users:
-                    if user["id"] == id:
-                        return user
-        except FileNotFoundError:
-            return None
-        return None
+        return cls.storage.get(id)
 
     @classmethod
     def update(cls, id, data):
-        try:
-            with open("users.json", "r") as file:
-                users = json.load(file)
-                for user in users:
-                    if user["id"] == id:
-                        for key, value in data.items():
-                            if key in user:
-                                user[key] = value
-                        user["updated_at"] = datetime.utcnow().isoformat()
-                        break
-                else:
-                    return None
-        except FileNotFoundError:
-            return None
-
+        user = cls.storage.get(id)
+        if user:
+            for key, value in data.items():
+                if hasattr(User, key):
+                    setattr(User, key, value)
+            user.updated_at = datetime.utcnow()
+            return user
+        return None
+    
     @classmethod
     def delete(cls, id):
-        try:
-            with open("users.json", "r") as file:
-                users = json.load(file)
-                users = [user for user in users if user["id"] != id]
-        except FileNotFoundError:
-            return None
+        return cls.storage.pop(id, None)
