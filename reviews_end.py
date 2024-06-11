@@ -7,7 +7,7 @@ app = Flask(__name__)
 def create_review():
     try:
         data = request.get_json()
-        review = Review.create_review(data)
+        review = Review.create(data)
         return jsonify(review.to_dict()), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -29,7 +29,7 @@ def get_review(review_id):
 def update_review(review_id):
     try:
         data = request.get_json()
-        review = Review.update_review(review_id, data)
+        review = Review.update(review_id, data)
         return jsonify(review.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -37,7 +37,7 @@ def update_review(review_id):
 @app.route('/reviews/<review_id>', methods=['DELETE'])
 def delete_review(review_id):
     try:
-        Review.delete_review(review_id)
+        Review.delete(review_id)
         return '', 204
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
