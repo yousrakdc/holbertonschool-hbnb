@@ -12,8 +12,8 @@ class Review(CRUD):
         self.place = place
         self.rating = rating
         self.comment = comment
-        self.created_at = datetime.utcnow()
-        self.updated_at = datetime.utcnow()
+        self.created_at = datetime.now()
+        self.updated_at = datetime.now()
 
     def __repr__(self):
         return f"Rating= {self.rating} by <{self.user.email}>\nComment: {self.comment}"
@@ -35,7 +35,7 @@ class Review(CRUD):
             for key, value in data.items():
                 if hasattr(review, key):
                     setattr(review, key, value)
-            review.updated_at = datetime.utcnow()
+            review.updated_at = datetime.now()
             return review
         return None
 
