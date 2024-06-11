@@ -90,6 +90,3 @@ class TestAmenity(unittest.TestCase):
         """Removing an amenity"""
         Amenity.delete(self.amenity.id)
         self.assertIsNone(Amenity.read(self.amenity.id))
-
-if __name__ == "__main__":
-    unittest.main()
