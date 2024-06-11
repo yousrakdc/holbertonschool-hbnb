@@ -56,5 +56,11 @@ class User(CRUD):
         return None
     
     @classmethod
+    def get_user(cls, id):
+        user = cls.read(id)
+        if user is None:
+            raise ValueError("User not found")
+    
+    @classmethod
     def delete(cls, id):
         return cls.storage.pop(id, None)
