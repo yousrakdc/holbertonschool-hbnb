@@ -23,5 +23,6 @@ class TestCountry(unittest.TestCase):
         self.assertIsNone(result)
 
 
+# Run the unit tests
 if __name__ == '__main__':
     unittest.main()
