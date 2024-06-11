@@ -40,5 +40,12 @@ class Review(CRUD):
         return None
 
     @classmethod
+    def get_review(cls, id):
+        review = cls.read(id)
+        if review is None:
+            raise ValueError("Review not found")
+        return review
+
+    @classmethod
     def delete(cls, id):
         return cls.storage.pop(id, None)
