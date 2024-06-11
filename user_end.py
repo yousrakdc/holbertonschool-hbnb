@@ -7,14 +7,14 @@ app = Flask(__name__)
 def create_user():
     try:
         data = request.get_json()
-        user = User.create_user(data)
+        user = User.create(data)
         return jsonify(user.to_dict()), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route('/users', methods=['GET'])
 def get_users():
-    users = User.get_all_users()
+    users = list(User.storage.values())
     return jsonify([user.to_dict() for user in users]), 200
 
 @app.route('/users/<user_id>', methods=['GET'])
@@ -29,7 +29,7 @@ def get_user(user_id):
 def update_user(user_id):
     try:
         data = request.get_json()
-        user = User.update_user(user_id, data)
+        user = User.update(user_id, data)
         return jsonify(user.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -37,7 +37,7 @@ def update_user(user_id):
 @app.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
     try:
-        User.delete_user(user_id)
+        User.delete(user_id)
         return '', 204
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
