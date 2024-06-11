@@ -7,20 +7,20 @@ app = Flask(__name__)
 def create_review():
     try:
         data = request.get_json()
-        review = ReviewService.create_review(data)
+        review = Review.create_review(data)
         return jsonify(review.to_dict()), 201
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
 
 @app.route('/reviews', methods=['GET'])
 def get_reviews():
-    reviews = ReviewService.get_all_reviews()
+    reviews = Review.get_all_reviews()
     return jsonify([review.to_dict() for review in reviews]), 200
 
 @app.route('/reviews/<review_id>', methods=['GET'])
 def get_review(review_id):
     try:
-        review = ReviewService.get_review(review_id)
+        review = Review.get_review(review_id)
         return jsonify(review.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
@@ -29,7 +29,7 @@ def get_review(review_id):
 def update_review(review_id):
     try:
         data = request.get_json()
-        review = ReviewService.update_review(review_id, data)
+        review = Review.update_review(review_id, data)
         return jsonify(review.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -37,7 +37,7 @@ def update_review(review_id):
 @app.route('/reviews/<review_id>', methods=['DELETE'])
 def delete_review(review_id):
     try:
-        ReviewService.delete_review(review_id)
+        Review.delete_review(review_id)
         return '', 204
     except ValueError as e:
         return jsonify({"error": str(e)}), 404
