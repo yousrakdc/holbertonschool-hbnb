@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 import unittest
 import json
-from api.place import place, city, amenity
-import os
+from API.place import place, amenity, city
 
 
 class PlaceTestCase(unittest.TestCase):
     def setUp(self):
         """Set up the Flask test client"""
-        self.client = app.test_client()
+        self.client = place.test_client()
         self.client.testing = True
         
         """Initialize in-memory data"""
