@@ -47,11 +47,10 @@ class User(CRUD):
         if user:
             for key, value in data.items():
                 if hasattr(user, key):
-                    setattr(user, key, value)  # Here, you should use 'user' instead of 'User'
+                    setattr(user, key, value)  # Use 'user' instead of 'cls'
                     user.updated_at = datetime.utcnow()
-                    return user
-                return None
-
+                return user
+            return None  # Return None if user is not found
 
     @classmethod
     def delete(cls, id):
