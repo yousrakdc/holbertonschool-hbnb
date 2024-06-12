@@ -1,14 +1,14 @@
 from flask import Flask, jsonify, request
-import flask_app
+from models import place
 
-flask_app = Flask(__name__)
+app = Flask(__name__)
 
 # In-memory data storage
 place = {}
 city = {}
 amenity = {}
 
-@flask_app.route('/places', methods=['POST'])
+@app.route('/places', methods=['POST'])
 def create_place():
     data = request.json
     required_fields = ["name", "address", "city_id", "latitude", "longitude", "host_id",
@@ -23,24 +23,24 @@ def create_place():
     place[place_id] = data
     return jsonify(place[place_id]), 201
 
-@flask_app.route('/places', methods=['GET'])
+@app.route('/places', methods=['GET'])
 def get_places():
     return jsonify(list(place.values())), 200
 
-@flask_app.route('/places/<place_id>', methods=['GET'])
+@app.route('/places/<place_id>', methods=['GET'])
 def get_place(place_id):
     if place_id not in place:
         return jsonify({"error": "Place not found"}), 404
     return jsonify(place[place_id]), 200
 
-@flask_app.route('/places/<place_id>', methods=['DELETE'])
+@app.route('/places/<place_id>', methods=['DELETE'])
 def delete_place(place_id):
     if place_id not in place:
         return jsonify({"error": "Place not found"}), 404
     del place[place_id]
     return '', 204
 
-@flask_app.route('/places/<place_id>', methods=['PUT'])
+@app.route('/places/<place_id>', methods=['PUT'])
 def update_place(place_id):
     if place_id not in place:
         return jsonify({"error": "Place not found"}), 404
@@ -49,4 +49,4 @@ def update_place(place_id):
     return jsonify(place[place_id]), 200
 
 if __name__ == '__main__':
-    flask_app.run(debug=True)
+    app.run(debug=True)

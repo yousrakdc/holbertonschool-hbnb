@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify
 from models import User
-from flask.app import app
 
-# Pagination constants
+app = Flask(__name__)
+
 USERS_PER_PAGE = 10
 
 @app.route('/users', methods=['POST'])
