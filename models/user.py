@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from .crud import CRUD
 import uuid
 from datetime import datetime
