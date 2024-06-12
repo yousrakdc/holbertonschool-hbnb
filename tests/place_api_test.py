@@ -1,9 +1,9 @@
+#!/usr/bin/python3
 import unittest
 import json
-from api.place import app, place, city, amenity
-from flask import Flask
+from api.place import place, city, amenity
+import os
 
-app = Flask(__name__)
 
 class PlaceTestCase(unittest.TestCase):
     def setUp(self):
