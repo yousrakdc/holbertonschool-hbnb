@@ -4,6 +4,7 @@ from .crud import CRUD
 
 
 class Country(CRUD):
+    countries = {"FR": "France"}
 
     @classmethod
     def all(cls):

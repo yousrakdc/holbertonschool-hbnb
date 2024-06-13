@@ -5,9 +5,7 @@ from flask_restx import Api, Resource, fields
 from hbnb.models.city import City
 from hbnb.models.country import Country
 from datetime import datetime
-from hbnb import app
-
-api = Api(app, version='1.0', title='City and Country API', description='API for managing cities and countries')
+from hbnb import api
 
 ns_country = api.namespace('countries', description='Country operations')
 ns_city = api.namespace('cities', description='City operations')
@@ -18,7 +16,7 @@ country_model = api.model('Country', {
 })
 
 city_model = api.model('City', {
-    'id': fields.Integer(required=True, description='The city ID'),
+    'id': fields.String(required=True, description='The city ID'),
     'name': fields.String(required=True, description='The city name'),
     'country_code': fields.String(required=True, description='The country code for the city'),
     'created_at': fields.DateTime(required=True, description='The creation timestamp'),
@@ -63,8 +61,8 @@ class CityList(Resource):
     @ns_city.marshal_list_with(city_model)
     def get(self):
         """Retrieves a list of all cities"""
-        return City.get_all_cities()
-
+        return list(City.storage.values())
+    
     @ns_city.doc('create_city')
     @ns_city.expect(city_model)
     @ns_city.marshal_with(city_model, code=201)
@@ -81,11 +79,11 @@ class CityList(Resource):
             return {'error': 'Missing required fields'}, 400
 
         # Validate country code
-        country = Country.get_country(country_code)
+        country = Country.get(country_code)
         if not country:
             return {'error': 'Invalid country code'}, 404
 
-        new_city = City.create_city(name, country_code)
+        new_city = City.create(name, country_code)
         return new_city, 201
 
 @ns_city.route('/<int:city_id>')
@@ -139,6 +137,3 @@ class CityResource(Resource):
             return {'error': 'City not found'}, 404
         City.delete_city(city_id)
         return '', 204
-
-if __name__ == '__main__':
-    app.run(debug=True)

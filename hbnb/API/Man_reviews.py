@@ -1,9 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_restx import Api, Resource, fields
 from hbnb.models.reviews import Review
-
-app = Flask(__name__)
-api = Api(app, version='1.0', title='Review API', description='API for managing reviews')
+from hbnb import api
 
 ns = api.namespace('reviews', description='Review operations')
 
@@ -77,6 +75,3 @@ class ReviewResource(Resource):
             return '', 204
         except ValueError as e:
             return {'error': str(e)}, 404
-
-if __name__ == '__main__':
-    app.run(debug=True)

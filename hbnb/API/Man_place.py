@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 from flask import Flask, jsonify, request
 from flask_restx import Api, Resource, fields
+from hbnb import api
 
-app = Flask(__name__)
-api = Api(app, version='1.0', title='Place API', description='API for managing places')
 
 ns = api.namespace('places', description='Place operations')
 
@@ -86,6 +85,3 @@ class PlaceResource(Resource):
         data = request.get_json()
         places[place_id].update(data)
         return places[place_id]
-
-if __name__ == '__main__':
-    app.run(debug=True)

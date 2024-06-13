@@ -1,6 +1,8 @@
 from flask import Flask
+from flask_restx import Api
 
 app = Flask(__name__)
+api = Api(app, version='1.0', title='Hbnh API', description='Hbnb clone experimentation')
 
 import hbnb.API.Man_reviews
 import hbnb.API.Man_user

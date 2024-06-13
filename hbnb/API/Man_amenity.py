@@ -2,9 +2,7 @@
 from flask import request, jsonify
 from flask_restx import Api, Resource, fields
 from hbnb.models.amenity import Amenity
-from hbnb import app
-
-api = Api(app, version='1.0', title='Amenity API', description='API for managing amenities')
+from hbnb import api
 
 ns = api.namespace('amenities', description='Amenity operations')
 
@@ -74,5 +72,3 @@ class AmenityResource(Resource):
         except ValueError as e:
             return {'error': str(e)}, 404
 
-if __name__ == '__main__':
-    app.run(debug=True)

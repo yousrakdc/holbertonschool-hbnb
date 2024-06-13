@@ -6,10 +6,10 @@ from hbnb.models.country import Country
 class City(CRUD):
     storage = {}
 
-    def __init__(self, name, country : Country):
+    def __init__(self, name, country_code : str):
         self.id = str(uuid.uuid4())
         self.name = name
-        self.country = country
+        self.country_code = country_code
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
 
@@ -17,8 +17,8 @@ class City(CRUD):
         return f"<City {self.name}>"
 
     @classmethod
-    def create(self, data):
-        city = City(**data)
+    def create(self, name, country_code):
+        city = City(name, country_code)
         City.storage[city.id] = city
         return city
 
