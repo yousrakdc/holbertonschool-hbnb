@@ -5,10 +5,6 @@ from hbnb import app
 
 users = {}
 
-@app.route('/')
-def index():
-    return jsonify(message='Welcome to the User API')
-
 @app.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json()

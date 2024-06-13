@@ -8,10 +8,6 @@ places = {}
 city = {}
 amenity = {}
 
-@app.route('/')
-def index():
-    return "Welcome to the Places API!"
-
 @app.route('/places', methods=['POST'])
 def create_place():
     data = request.json
