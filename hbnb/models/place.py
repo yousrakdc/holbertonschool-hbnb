@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from .crud import CRUD
-
+from hbnb.models.city import City
 
 class Place(CRUD):
     storage = {}
@@ -11,7 +11,7 @@ class Place(CRUD):
         self.name = name
         self.description = description
         self.address = address
-        self.city = city
+        self.city = City
         self.latitude = latitude
         self.longitude = longitude
         self.host = host

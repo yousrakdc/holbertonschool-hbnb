@@ -3,10 +3,6 @@ from flask import request, jsonify
 from hbnb.models.amenity import Amenity
 from hbnb import app
 
-@app.route('/', methods=['GET'])
-def home():
-    return "Welcome to the Amenities API!"
-
 @app.route('/amenities', methods=['POST'])
 def create_amenity():
     try:

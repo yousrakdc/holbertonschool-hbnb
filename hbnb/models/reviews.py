@@ -1,6 +1,8 @@
 import uuid
 from datetime import datetime
 from .crud import CRUD
+from hbnb.models.user import User
+from hbnb.models.place import Place
 
 
 class Review(CRUD):
@@ -8,8 +10,8 @@ class Review(CRUD):
 
     def __init__(self, user, place, rating, comment):
         self.id = str(uuid.uuid4())
-        self.user = user
-        self.place = place
+        self.user = User
+        self.place = Place
         self.rating = rating
         self.comment = comment
         self.created_at = datetime.utcnow()
