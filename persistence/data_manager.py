@@ -2,7 +2,16 @@
 
 from typing import Dict, Any, Type
 from abc import ABC, abstractmethod
+from models import Place, User, Review, Amenity, City, Country
 
+classes = {
+    "Place": Place,
+    "User": User,
+    "Review": Review,
+    "Amenity": Amenity,
+    "City": City,
+    "Country": Country
+}
 
 class IPersistenceManager(ABC):
     # Save the given entity
