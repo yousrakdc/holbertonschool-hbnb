@@ -1,9 +1,14 @@
+#!/usr/bin/python3
 from flask import Flask, request, jsonify
 from models import User
 
 app = Flask(__name__)
 
 USERS_PER_PAGE = 10
+
+@app.route('/')
+def index():
+    return jsonify({"message": "Welcome to the User API"}), 200
 
 @app.route('/users', methods=['POST'])
 def create_user():
@@ -24,6 +29,7 @@ def get_users():
     end = start + USERS_PER_PAGE
     users = list(User.storage.values())[start:end]
     return jsonify([user.to_dict() for user in users]), 200
+pass
 
 @app.route('/users/<user_id>', methods=['GET'])
 def get_user(user_id):
