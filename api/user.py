@@ -1,63 +1,55 @@
 #!/usr/bin/python3
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from models import User
 
-app = Flask(__name__)
+from flask import Flask, jsonify, request, abort
 
-USERS_PER_PAGE = 10
+app = Flask(__name__)
+users = {}
 
 @app.route('/')
 def index():
-    return jsonify({"message": "Welcome to the User API"}), 200
+    return jsonify(message='Welcome to the User API')
 
 @app.route('/users', methods=['POST'])
 def create_user():
     data = request.get_json()
-    if not data or 'username' not in data or 'email' not in data:
-        return jsonify({"error": "Username and email are required."}), 400
+    if not data:
+        print("No data received in the request")
+        abort(400, description="No data provided")
     
-    try:
-        user = User.create(data)
-        return jsonify(user.to_dict()), 201
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    user_id = str(len(users) + 1)
+    users[user_id] = data
+    response = jsonify(id=user_id, **data)
+    print('Create User Response:', response.get_data(as_text=True))
+    return response, 201
 
 @app.route('/users', methods=['GET'])
 def get_users():
-    page = int(request.args.get('page', 1))
-    start = (page - 1) * USERS_PER_PAGE
-    end = start + USERS_PER_PAGE
-    users = list(User.storage.values())[start:end]
-    return jsonify([user.to_dict() for user in users]), 200
-pass
+    return jsonify(list(users.values())), 200
 
 @app.route('/users/<user_id>', methods=['GET'])
 def get_user(user_id):
-    try:
-        user = User.get_user(user_id)
-        return jsonify(user.to_dict()), 200
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+    user = users.get(user_id)
+    if user is None:
+        abort(404)
+    return jsonify(user), 200
 
 @app.route('/users/<user_id>', methods=['PUT'])
 def update_user(user_id):
+    user = users.get(user_id)
+    if user is None:
+        abort(404)
     data = request.get_json()
-    if not data:
-        return jsonify({"error": "No data provided."}), 400
-    
-    try:
-        user = User.update(user_id, data)
-        return jsonify(user.to_dict()), 200
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+    users[user_id].update(data)
+    return jsonify(users[user_id]), 200
 
 @app.route('/users/<user_id>', methods=['DELETE'])
 def delete_user(user_id):
-    try:
-        User.delete(user_id)
-        return '', 204
-    except ValueError as e:
-        return jsonify({"error": str(e)}), 404
+    if user_id not in users:
+        abort(404)
+    del users[user_id]
+    return '', 204
 
 if __name__ == '__main__':
     app.run(debug=True)

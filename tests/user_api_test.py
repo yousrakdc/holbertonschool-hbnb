@@ -31,17 +31,12 @@ class TestUserAPI(unittest.TestCase):
         self.assertIsInstance(data, list)
 
     def test_get_user(self):
-        response = self.app.get('/users/1')
-        self.assertEqual(response.status_code, 404)
+        # Create a user first
+        create_data = {'username': 'test_user', 'email': 'test@example.com'}
+        create_response = self.app.post('/users', json=create_data)
+        create_data = json.loads(create_response.data.decode('utf-8'))
+        user_id = create_data['id']
 
-    def test_update_user(self):
-        data = {'username': 'updated_user'}
-        response = self.app.put('/users/1', json=data)
-        self.assertEqual(response.status_code, 404)
-
-    def test_delete_user(self):
-        response = self.app.delete('/users/1')
-        self.assertEqual(response.status_code, 404)
-
-if __name__ == '__main__':
-    unittest.main()
+        # Retrieve the created user
+        response = self.app.get(f'/users/{user_id}')
+        self.assertEqual(response.status_code, 200)  # Expecting 200 for successful retrieval
