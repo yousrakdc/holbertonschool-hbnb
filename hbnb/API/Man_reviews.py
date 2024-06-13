@@ -19,7 +19,7 @@ def get_reviews():
 @app.route('/reviews/<review_id>', methods=['GET'])
 def get_review(review_id):
     try:
-        review = Review.get_all_review(review_id)
+        review = Review.get_all_reviews().get(review_id)
         return jsonify(review.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 404

@@ -20,7 +20,7 @@ def get_amenities():
 @app.route('/amenities/<amenity_id>', methods=['GET'])
 def get_amenity(amenity_id):
     try:
-        amenity = Amenity.get_amenity(amenity_id)
+        amenity = Amenity.get_all_amenities().get(amenity_id)
         return jsonify(amenity.to_dict()), 200
     except ValueError as e:
         return jsonify({"error": str(e)}), 404

@@ -27,7 +27,7 @@ class Amenity(CRUD):
             }
     
     @classmethod
-    def get_all_amenites(cls):
+    def get_all_amenities(cls):
         return cls.storage
 
     @classmethod
