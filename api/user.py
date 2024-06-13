@@ -1,7 +1,5 @@
 #!/usr/bin/python3
-from flask import Flask, request, jsonify, abort
 from models import User
-
 from flask import Flask, jsonify, request, abort
 
 app = Flask(__name__)
