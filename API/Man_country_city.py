@@ -20,11 +20,11 @@ app = Flask(__name__)
 
 # Helper function to find a country by code
 def find_country(code):
-    return next((c for c in country if c['code'] == code), None)
+    return next((c for c in country if c["code"] == code), None)
 
 # Helper function to find a city by id
 def find_city(city_id):
-    return next((c for c in city if c['id'] == city_id), None)
+    return next((c for c in city if c["id"] == city_id), None)
 
 # Root route
 @app.route('/')
