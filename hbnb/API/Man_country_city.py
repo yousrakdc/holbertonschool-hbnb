@@ -27,20 +27,12 @@ def find_country(code):
 def find_city(city_id):
     return next((c for c in city if c["id"] == city_id), None)
 
-# Root route
-@app.route('/')
-def index():
-    return jsonify({
-        'message': 'Welcome to the City and Country API!',
-    })
-
 # City Endpoints
 @app.route('/cities', methods=['POST'])
 def create_city():
     data = request.get_json()
-    name = data.get('name')
-    country_code = data.get('country_code')
-
+    name = data['name']
+    country_code = data['country_code']
     # Validate request body
     if not name or not country_code:
         return jsonify({'error': 'Missing required fields'}), 400
@@ -98,8 +90,8 @@ def update_city(city_id):
         return jsonify({'error': 'City not found'}), 404
 
     data = request.get_json()
-    name = data.get('name')
-    country_code = data.get('country_code')
+    name = data['name']
+    country_code = data['country_code']
 
     # Validate request body
     if not name or not country_code:
