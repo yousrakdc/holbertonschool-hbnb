@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import unittest
 import json
 from API.user import app
