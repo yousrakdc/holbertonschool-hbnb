@@ -74,7 +74,7 @@ class TestUserAPI(unittest.TestCase):
 
         # Delete the created user
         response = self.app.delete(f'/users/{user_id}')
-        self.assertEqual(response.status_code, 204)  # Expecting 204 for successful deletion
+        self.assertEqual(response.status_code, 204) #if successful, 204
 
         # Verify the user is deleted
         get_response = self.app.get(f'/users/{user_id}')
