@@ -17,14 +17,29 @@ class Review(CRUD):
 
     def __repr__(self):
         return f"Rating= {self.rating} by <{self.user.email}>\nComment: {self.comment}"
+    
+    def to_dict(self):
+        return {
+            'user': self.user,
+            'id': self.id,
+            'place' : self.place,
+            'rating': self.rating,
+            'comment': self.comment,
+            'created_at':self.created_at,
+            'updated_at': self.updated_at
+            }
+    
+    @classmethod
+    def get_all_reviews(cls):
+        return cls.storage
 
     @classmethod
     def create(cls, data):
-        user = data.get("user")
-        place = data.get("place")
+        user = data["user"]
+        place = data["place"]
 
         if user and place:
-            if place.get("host") == user:
+            if place["host"] == user:
                 raise ValueError("A host cannot review their own place.")
         else:
             review = Review(**data)
@@ -39,7 +54,7 @@ class Review(CRUD):
     def update(cls, id, data):
         review = cls.storage.get(id)
         if review:
-            for key, value in data.items():
+            for key, value in data():
                 if hasattr(review, key):
                     setattr(review, key, value)
             review.updated_at = datetime.utcnow()
@@ -49,3 +64,4 @@ class Review(CRUD):
     @classmethod
     def delete(cls, id):
         return cls.storage.pop(id, None)
+    
