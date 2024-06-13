@@ -1,119 +1,144 @@
 #!/usr/bin/python3
 
 from flask import jsonify, request
+from flask_restx import Api, Resource, fields
 from hbnb.models.city import City
 from hbnb.models.country import Country
 from datetime import datetime
 from hbnb import app
 
-# Mock data for country and city
-country = [
-    {'code': 'US', 'name': 'United States'},
-    {'code': 'CA', 'name': 'Canada'},
-    {'code': 'MX', 'name': 'Mexico'}
-]
+api = Api(app, version='1.0', title='City and Country API', description='API for managing cities and countries')
 
-city = [
-    {'id': 1, 'name': 'New York', 'country_code': 'US', 'created_at': datetime.utcnow(), 'updated_at': datetime.utcnow()},
-    {'id': 2, 'name': 'Los Angeles', 'country_code': 'US', 'created_at': datetime.utcnow(), 'updated_at': datetime.utcnow()},
-    {'id': 3, 'name': 'Toronto', 'country_code': 'CA', 'created_at': datetime.utcnow(), 'updated_at': datetime.utcnow()}
-]
+ns_country = api.namespace('countries', description='Country operations')
+ns_city = api.namespace('cities', description='City operations')
 
-# Helper function to find a country by code
-def find_country(code):
-    return next((c for c in country if c["code"] == code), None)
+country_model = api.model('Country', {
+    'code': fields.String(required=True, description='The country code'),
+    'name': fields.String(required=True, description='The country name')
+})
 
-# Helper function to find a city by id
-def find_city(city_id):
-    return next((c for c in city if c["id"] == city_id), None)
+city_model = api.model('City', {
+    'id': fields.Integer(required=True, description='The city ID'),
+    'name': fields.String(required=True, description='The city name'),
+    'country_code': fields.String(required=True, description='The country code for the city'),
+    'created_at': fields.DateTime(required=True, description='The creation timestamp'),
+    'updated_at': fields.DateTime(required=True, description='The last update timestamp')
+})
 
-# City Endpoints
-@app.route('/cities', methods=['POST'])
-def create_city():
-    data = request.get_json()
-    name = data['name']
-    country_code = data['country_code']
-    # Validate request body
-    if not name or not country_code:
-        return jsonify({'error': 'Missing required fields'}), 400
+@ns_country.route('')
+class CountryList(Resource):
+    @ns_country.doc('get_countries')
+    @ns_country.marshal_list_with(country_model)
+    def get(self):
+        """Retrieves a list of all countries"""
+        return Country.get_all_countries()
 
-    # Validate country code
-    country_obj = find_country(country_code)
-    if not country_obj:
-        return jsonify({'error': 'Invalid country code'}), 400
+@ns_country.route('/<string:country_code>')
+@ns_country.param('country_code', 'The country code')
+class CountryResource(Resource):
+    @ns_country.doc('get_country')
+    @ns_country.marshal_with(country_model)
+    @ns_country.response(404, 'Country not found')
+    def get(self, country_code):
+        """Retrieves a specific country by its code"""
+        country = Country.get_country(country_code)
+        if not country:
+            return {'error': 'Country not found'}, 404
+        return country
 
-    new_city = {
-        'id': len(city) + 1,
-        'name': name,
-        'country_code': country_code,
-        'created_at': datetime.utcnow(),
-        'updated_at': datetime.utcnow(),
-    }
-    city.append(new_city)
-    return jsonify(new_city), 201
+    @ns_country.doc('get_cities_by_country')
+    @ns_country.marshal_list_with(city_model)
+    @ns_country.response(404, 'Country not found')
+    def get(self, country_code):
+        """Retrieves a list of cities for a specific country"""
+        country = Country.get_country(country_code)
+        if not country:
+            return {'error': 'Country not found'}, 404
+        cities = City.get_cities_by_country(country_code)
+        return cities
 
-# Country Endpoints
-@app.route('/countries', methods=['GET'])
-def get_countries():
-    return jsonify(country)
+@ns_city.route('')
+class CityList(Resource):
+    @ns_city.doc('get_cities')
+    @ns_city.marshal_list_with(city_model)
+    def get(self):
+        """Retrieves a list of all cities"""
+        return City.get_all_cities()
 
-@app.route('/countries/<string:country_code>', methods=['GET'])
-def get_country(country_code):
-    country_obj = find_country(country_code)
-    if not country_obj:
-        return jsonify({'error': 'Country not found'}), 404
-    return jsonify(country_obj)
+    @ns_city.doc('create_city')
+    @ns_city.expect(city_model)
+    @ns_city.marshal_with(city_model, code=201)
+    @ns_city.response(400, 'Bad Request')
+    @ns_city.response(404, 'Invalid country code')
+    def post(self):
+        """Creates a new city"""
+        data = request.get_json()
+        name = data.get('name')
+        country_code = data.get('country_code')
 
-@app.route('/countries/<string:country_code>/cities', methods=['GET'])
-def get_cities_by_country(country_code):
-    country_obj = find_country(country_code)
-    if not country_obj:
-        return jsonify({'error': 'Country not found'}), 404
-    country_cities = [c for c in city if c['country_code'] == country_code]
-    return jsonify(country_cities)
+        # Validate request body
+        if not name or not country_code:
+            return {'error': 'Missing required fields'}, 400
 
-@app.route('/cities', methods=['GET'])
-def get_cities():
-    return jsonify(city)
+        # Validate country code
+        country = Country.get_country(country_code)
+        if not country:
+            return {'error': 'Invalid country code'}, 404
 
-@app.route('/cities/<int:city_id>', methods=['GET'])
-def get_city(city_id):
-    city_obj = find_city(city_id)
-    if not city_obj:
-        return jsonify({'error': 'City not found'}), 404
-    return jsonify(city_obj)
+        new_city = City.create_city(name, country_code)
+        return new_city, 201
 
-@app.route('/cities/<int:city_id>', methods=['PUT'])
-def update_city(city_id):
-    city_obj = find_city(city_id)
-    if not city_obj:
-        return jsonify({'error': 'City not found'}), 404
+@ns_city.route('/<int:city_id>')
+@ns_city.param('city_id', 'The city ID')
+class CityResource(Resource):
+    @ns_city.doc('get_city')
+    @ns_city.marshal_with(city_model)
+    @ns_city.response(404, 'City not found')
+    def get(self, city_id):
+        """Retrieves a specific city by its ID"""
+        city = City.get_city(city_id)
+        if not city:
+            return {'error': 'City not found'}, 404
+        return city
 
-    data = request.get_json()
-    name = data['name']
-    country_code = data['country_code']
+    @ns_city.doc('update_city')
+    @ns_city.expect(city_model)
+    @ns_city.marshal_with(city_model)
+    @ns_city.response(400, 'Bad Request')
+    @ns_city.response(404, 'City not found')
+    @ns_city.response(404, 'Invalid country code')
+    def put(self, city_id):
+        """Updates an existing city by its ID"""
+        city = City.get_city(city_id)
+        if not city:
+            return {'error': 'City not found'}, 404
 
-    # Validate request body
-    if not name or not country_code:
-        return jsonify({'error': 'Missing required fields'}), 400
+        data = request.get_json()
+        name = data.get('name')
+        country_code = data.get('country_code')
 
-    # Validate country code
-    country_obj = find_country(country_code)
-    if not country_obj:
-        return jsonify({'error': 'Invalid country code'}), 400
+        # Validate request body
+        if not name or not country_code:
+            return {'error': 'Missing required fields'}, 400
 
-    city_obj['name'] = name
-    city_obj['country_code'] = country_code
-    city_obj['updated_at'] = datetime.utcnow()
-    return jsonify(city_obj)
+        # Validate country code
+        country = Country.get_country(country_code)
+        if not country:
+            return {'error': 'Invalid country code'}, 404
 
-@app.route('/cities/<int:city_id>', methods=['DELETE'])
-def delete_city(city_id):
-    city_obj = find_city(city_id)
-    if not city_obj:
-        return jsonify({'error': 'City not found'}), 404
-    city.remove(city_obj)
-    return '', 204
+        updated_city = City.update_city(city_id, name, country_code)
+        return updated_city
+
+    @ns_city.doc('delete_city')
+    @ns_city.response(204, 'City deleted')
+    @ns_city.response(404, 'City not found')
+    def delete(self, city_id):
+        """Deletes an existing city by its ID"""
+        city = City.get_city(city_id)
+        if not city:
+            return {'error': 'City not found'}, 404
+        City.delete_city(city_id)
+        return '', 204
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,49 +1,82 @@
-#!/usr/bin/python3
-from hbnb.models.user import User
-from flask import jsonify, request, abort
-from hbnb import app
+from flask import Flask, request, jsonify
+from flask_restx import Api, Resource, fields
+from hbnb.models.reviews import Review
 
-users = {}
+app = Flask(__name__)
+api = Api(app, version='1.0', title='Review API', description='API for managing reviews')
 
-@app.route('/users', methods=['POST'])
-def create_user():
-    data = request.get_json()
-    if not data:
-        print("No data received in the request")
-        abort(400, description="No data provided")
-    
-    user_id = str(len(users) + 1)
-    users[user_id] = data
-    response = jsonify(id=user_id, **data)
-    print('Create User Response:', response.get_data(as_text=True))
-    return response, 201
+ns = api.namespace('reviews', description='Review operations')
 
-@app.route('/users', methods=['GET'])
-def get_users():
-    return jsonify(list(users.values())), 200
+review_model = api.model('Review', {
+    'id': fields.Integer(required=True, description='The review ID'),
+    'user_id': fields.Integer(required=True, description='The user ID for the review'),
+    'place_id': fields.Integer(required=True, description='The place ID for the review'),
+    'text': fields.String(required=True, description='The review text'),
+    'rating': fields.Integer(required=True, description='The review rating (1-5)'),
+    'created_at': fields.DateTime(required=True, description='The creation timestamp'),
+    'updated_at': fields.DateTime(required=True, description='The last update timestamp')
+})
 
-@app.route('/users/<user_id>', methods=['GET'])
-def get_user(user_id):
-    user = users.get(user_id)
-    if user is None:
-        abort(404)
-    return jsonify(user), 200
+@ns.route('')
+class ReviewList(Resource):
+    @ns.doc('create_review')
+    @ns.expect(review_model)
+    @ns.marshal_with(review_model, code=201)
+    @ns.response(400, 'Bad Request')
+    def post(self):
+        """Creates a new review"""
+        try:
+            data = request.get_json()
+            review = Review.create(data)
+            return review.to_dict(), 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
 
-@app.route('/users/<user_id>', methods=['PUT'])
-def update_user(user_id):
-    user = users.get(user_id)
-    if user is None:
-        abort(404)
-    data = request.get_json()
-    users[user_id].update(data)
-    return jsonify(users[user_id]), 200
+    @ns.doc('get_reviews')
+    @ns.marshal_list_with(review_model)
+    def get(self):
+        """Retrieves a list of all reviews"""
+        reviews = Review.get_all_reviews()
+        return [review.to_dict() for review in reviews]
 
-@app.route('/users/<user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    if user_id not in users:
-        abort(404)
-    del users[user_id]
-    return '', 204
+@ns.route('/<int:review_id>')
+@ns.param('review_id', 'The review ID')
+class ReviewResource(Resource):
+    @ns.doc('get_review')
+    @ns.marshal_with(review_model)
+    @ns.response(404, 'Review not found')
+    def get(self, review_id):
+        """Retrieves a specific review by its ID"""
+        try:
+            review = Review.get_all_reviews().get(review_id)
+            return review.to_dict()
+        except ValueError as e:
+            return {'error': str(e)}, 404
+
+    @ns.doc('update_review')
+    @ns.expect(review_model)
+    @ns.marshal_with(review_model)
+    @ns.response(400, 'Bad Request')
+    @ns.response(404, 'Review not found')
+    def put(self, review_id):
+        """Updates an existing review by its ID"""
+        try:
+            data = request.get_json()
+            review = Review.update(review_id, data)
+            return review.to_dict()
+        except ValueError as e:
+            return {'error': str(e)}, 400
+
+    @ns.doc('delete_review')
+    @ns.response(204, 'Review deleted')
+    @ns.response(404, 'Review not found')
+    def delete(self, review_id):
+        """Deletes an existing review by its ID"""
+        try:
+            Review.delete(review_id)
+            return '', 204
+        except ValueError as e:
+            return {'error': str(e)}, 404
 
 if __name__ == '__main__':
     app.run(debug=True)
