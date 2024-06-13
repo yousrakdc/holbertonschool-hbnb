@@ -1,12 +1,12 @@
 import uuid
 from datetime import datetime
 from .crud import CRUD
-
+from hbnb.models.country import Country
 
 class City(CRUD):
     storage = {}
 
-    def __init__(self, name, country):
+    def __init__(self, name, country : Country):
         self.id = str(uuid.uuid4())
         self.name = name
         self.country = country

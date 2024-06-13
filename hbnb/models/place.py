@@ -2,16 +2,17 @@ import uuid
 from datetime import datetime
 from .crud import CRUD
 from hbnb.models.city import City
+from hbnb.models.amenity import Amenity
 
 class Place(CRUD):
     storage = {}
 
-    def __init__(self, name, description, address, city, latitude, longitude, host, num_rooms, num_bathrooms, price_per_night, max_guests, amenities):
+    def __init__(self, name, description, address, city : City, latitude, longitude, host, num_rooms, num_bathrooms, price_per_night, max_guests, amenities : Amenity):
         self.id = str(uuid.uuid4())
         self.name = name
         self.description = description
         self.address = address
-        self.city = City
+        self.city = city
         self.latitude = latitude
         self.longitude = longitude
         self.host = host

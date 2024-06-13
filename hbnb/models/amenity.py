@@ -1,8 +1,6 @@
 import uuid
 from datetime import datetime
 from .crud import CRUD
-from hbnb.models.place import Place
-
 
 class Amenity(CRUD):
     storage = {}
@@ -10,7 +8,6 @@ class Amenity(CRUD):
     def __init__(self, name):
         self.id = str(uuid.uuid4())
         self.name = name
-        self.place = Place
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
 
@@ -21,7 +18,6 @@ class Amenity(CRUD):
         return {
             'name': self.name,
             'id': self.id,
-            'place' : self.place,
             'created_at': self.created_at,
             'updated_at': self.updated_at
             }

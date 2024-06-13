@@ -4,14 +4,13 @@ from .crud import CRUD
 from hbnb.models.user import User
 from hbnb.models.place import Place
 
-
 class Review(CRUD):
     storage = {}
 
-    def __init__(self, user, place, rating, comment):
+    def __init__(self, user : User, place : Place, rating, comment):
         self.id = str(uuid.uuid4())
-        self.user = User
-        self.place = Place
+        self.user = user
+        self.place = place
         self.rating = rating
         self.comment = comment
         self.created_at = datetime.utcnow()
