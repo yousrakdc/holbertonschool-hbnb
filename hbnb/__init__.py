@@ -7,6 +7,7 @@ import hbnb.API.Man_user
 import hbnb.API.Man_amenity
 import hbnb.API.Man_place
 import hbnb.API.Man_country_city
+import hbnb.Persistence.data_manager
 
 @app.route('/')
 def index():
