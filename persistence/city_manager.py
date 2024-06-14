@@ -2,7 +2,7 @@ import json
 from models.city import City
 
 class CityManager:
-    def __init__(self, path_file):
+    def __init__(self, path_file='cities.json'):
         self.json_file = path_file
         self.cities = self.load_cities_from_json()
 
