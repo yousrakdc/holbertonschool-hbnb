@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 
 class DataManager:
-    def __init__(self, file_path):
+    def __init__(self, file_path="data.json"):
         self.file_path = file_path
         self.data = {}
         self.load_data()
@@ -16,8 +16,8 @@ class DataManager:
 
     def save_data(self):
         with open(self.file_path, 'w') as file:
-            serialized_data = {str(key): value for key, value in self.data.items()}
-            json.dump(serialized_data, file, indent=4)
+            serialized_data = {key: value.to_dict() for key, value in self.data.items()}
+            json.dump(serialized_data, file, default=str, indent=4)
 
     def create(self, entity):
         if not hasattr(entity, 'id'):
@@ -55,3 +55,11 @@ class DataManager:
             print(f"Entity {entity_class.__name__} with ID {entity_id} deleted.")
         else:
             print(f"Entity {entity_class.__name__} with ID {entity_id} not found. Deletion failed.")
+            
+    def get_all(self, entity_class):
+        entities = []
+        for key, value in self.data.items():
+            if key.endswith(f"_{entity_class.__name__}"):
+                entities.append(value)
+        return entities
+
