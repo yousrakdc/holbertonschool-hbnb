@@ -1,24 +1,42 @@
-#!/usr/bin/python3
 import uuid
 from datetime import datetime
 from .crud import CRUD
-
+from persistence.country_manager import CountryManager
 
 class Country(CRUD):
-    
-    countries = {
-        'US': 'United States',
-        'CA': 'Canada',
-        'MX': 'Mexico'
-    }
+    def __init__(self, code, name):
+        self.id = str(uuid.uuid4())  # Generate UUID for the country
+        self.code = code
+        self.name = name
+        self.created_at = datetime.utcnow()
+        self.updated_at = datetime.utcnow()
+
+    def __repr__(self):
+        return f"Country({self.code}, {self.name})"
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'code': self.code,
+            'name': self.name,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
 
     @classmethod
-    def all(cls):
-        return [{'code': code, 'name': name} for code, name in cls.countries.items()]
+    def read(cls, code):
+        country_manager = CountryManager()
+        return country_manager.read_country(code)
+
+    def update(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+        self.updated_at = datetime.utcnow()
+        
+        country_manager = CountryManager()
+        country_manager.update_country(self)
 
     @classmethod
-    def get(cls, code):
-        name = cls.countries.get(code)
-        if name:
-            return {'code': code, 'name': name}
-        return None
+    def delete(cls, code):
+        country_manager = CountryManager()
+        country_manager.delete_country(code)
