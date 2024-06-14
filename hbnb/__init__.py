@@ -9,7 +9,9 @@ import hbnb.API.Man_user
 import hbnb.API.Man_amenity
 import hbnb.API.Man_place
 import hbnb.API.Man_country_city
-from hbnb.Persistence.Persis import IPersistenceManager
+from hbnb.Persistence.Persis import DataManager
+
+data_manager = DataManager(file_path='data.json')
 
 @app.route('/')
 def index():
