@@ -3,9 +3,11 @@ import uuid
 from datetime import datetime, timezone
 from persistence.data_manager import DataManager
 
+
 class User(CRUD):
-    def __init__(self, first_name, last_name, email, password):
-        self.id = str(uuid.uuid4())
+
+    def __init__(self, id, first_name, last_name, email, password):
+        self.id = id
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -32,6 +34,20 @@ class User(CRUD):
         }
     
     @classmethod
+    def from_dict(cls, json):
+        return User(json["id"], json["first_name"], json["last_name"], json["email"], json["password"])
+    
+    def is_valid_email(email):
+        return "@" in email
+
+    def email_exists(email):
+        data_manager = DataManager(file_path='data.json')
+        users = data_manager.data
+        emails = [user["email"] for user in users.values()]
+        return email in emails
+
+
+    @classmethod
     def create(cls, data):
         email = data.get("email")
         if not email:
@@ -41,6 +57,7 @@ class User(CRUD):
         if cls.email_exists(email):
             raise ValueError(f"Email '{email}' is already taken.")
         
+        data["id"]= str(uuid.uuid4())
         # Create a new User instance
         user = User(**data)
         
@@ -54,16 +71,19 @@ class User(CRUD):
     def read(cls, id):
         data_manager = DataManager(file_path='data.json')
         return data_manager.read(id, cls)
-
-    def update(self, data):
+    
+    @classmethod
+    def update(cls, id, data):
         # Update instance attributes
+        data_manager = DataManager(file_path='data.json')
+        user = data_manager.read(id, cls)
         for key, value in data.items():
-            setattr(self, key, value)
-        self.updated_at = datetime.utcnow()
+            setattr(user, key, value)
+        user.updated_at = datetime.utcnow()
         
         # Use DataManager to update the user
-        data_manager = DataManager(file_path='data.json')
-        data_manager.update(self)
+        data_manager.update(user)
+        return user
 
     @classmethod
     def delete(cls, id):
