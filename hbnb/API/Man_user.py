@@ -1,77 +1,75 @@
-from flask import Flask, request, jsonify
+#!/usr/bin/python3
+from flask import Flask, jsonify, request, abort
 from flask_restx import Api, Resource, fields
-from hbnb.models.reviews import Review
+from hbnb.models.user import User
 from hbnb import api
 
-ns = api.namespace('reviews', description='Review operations')
+ns = api.namespace('users', description='User operations')
 
-review_model = api.model('Review', {
-    'id': fields.Integer(required=True, description='The review ID'),
-    'user_id': fields.Integer(required=True, description='The user ID for the review'),
-    'place_id': fields.Integer(required=True, description='The place ID for the review'),
-    'text': fields.String(required=True, description='The review text'),
-    'rating': fields.Integer(required=True, description='The review rating (1-5)'),
-    'created_at': fields.DateTime(required=True, description='The creation timestamp'),
-    'updated_at': fields.DateTime(required=True, description='The last update timestamp')
+user_model = api.model('User', {
+    'id': fields.String(required=True, description='The user ID'),
+    'name': fields.String(required=True, description='The user name'),
+    'email': fields.String(required=True, description='The user email'),
+    'password': fields.String(required=True, description='The user password')
 })
 
+users = {}
+
 @ns.route('')
-class ReviewList(Resource):
-    @ns.doc('create_review')
-    @ns.expect(review_model)
-    @ns.marshal_with(review_model, code=201)
+class UserList(Resource):
+    @ns.doc('create_user')
+    @ns.expect(user_model)
+    @ns.marshal_with(user_model, code=201)
     @ns.response(400, 'Bad Request')
     def post(self):
-        """Creates a new review"""
-        try:
-            data = request.get_json()
-            review = Review.create(data)
-            return review.to_dict(), 201
-        except ValueError as e:
-            return {'error': str(e)}, 400
+        """Creates a new user"""
+        data = request.get_json()
+        if not data:
+            return {'error': 'No data provided'}, 400
 
-    @ns.doc('get_reviews')
-    @ns.marshal_list_with(review_model)
+        user_id = str(len(users) + 1)
+        users[user_id] = data
+        data['id'] = user_id
+        return data, 201
+
+    @ns.doc('get_users')
+    @ns.marshal_list_with(user_model)
     def get(self):
-        """Retrieves a list of all reviews"""
-        reviews = Review.get_all_reviews()
-        return [review.to_dict() for review in reviews]
+        """Retrieves a list of all users"""
+        return list(users.values())
 
-@ns.route('/<int:review_id>')
-@ns.param('review_id', 'The review ID')
-class ReviewResource(Resource):
-    @ns.doc('get_review')
-    @ns.marshal_with(review_model)
-    @ns.response(404, 'Review not found')
-    def get(self, review_id):
-        """Retrieves a specific review by its ID"""
-        try:
-            review = Review.get_all_reviews().get(review_id)
-            return review.to_dict()
-        except ValueError as e:
-            return {'error': str(e)}, 404
+@ns.route('/<string:user_id>')
+@ns.param('user_id', 'The user ID')
+class UserResource(Resource):
+    @ns.doc('get_user')
+    @ns.marshal_with(user_model)
+    @ns.response(404, 'User not found')
+    def get(self, user_id):
+        """Retrieves a specific user by its ID"""
+        user = users.get(user_id)
+        if user is None:
+            return {'error': 'User not found'}, 404
+        return user
 
-    @ns.doc('update_review')
-    @ns.expect(review_model)
-    @ns.marshal_with(review_model)
-    @ns.response(400, 'Bad Request')
-    @ns.response(404, 'Review not found')
-    def put(self, review_id):
-        """Updates an existing review by its ID"""
-        try:
-            data = request.get_json()
-            review = Review.update(review_id, data)
-            return review.to_dict()
-        except ValueError as e:
-            return {'error': str(e)}, 400
+    @ns.doc('update_user')
+    @ns.expect(user_model)
+    @ns.marshal_with(user_model)
+    @ns.response(404, 'User not found')
+    def put(self, user_id):
+        """Updates an existing user by its ID"""
+        user = users.get(user_id)
+        if user is None:
+            return {'error': 'User not found'}, 404
+        data = request.get_json()
+        users[user_id].update(data)
+        return users[user_id]
 
-    @ns.doc('delete_review')
-    @ns.response(204, 'Review deleted')
-    @ns.response(404, 'Review not found')
-    def delete(self, review_id):
-        """Deletes an existing review by its ID"""
-        try:
-            Review.delete(review_id)
-            return '', 204
-        except ValueError as e:
-            return {'error': str(e)}, 404
+    @ns.doc('delete_user')
+    @ns.response(204, 'User deleted')
+    @ns.response(404, 'User not found')
+    def delete(self, user_id):
+        """Deletes an existing user by its ID"""
+        if user_id not in users:
+            return {'error': 'User not found'}, 404
+        del users[user_id]
+        return '', 204
