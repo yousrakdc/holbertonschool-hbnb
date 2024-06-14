@@ -1,0 +1,46 @@
+Hbnb/
+│
+├── Dockerfile
+├── requirements.txt
+├── structure.txt
+|
+├── hbnb
+|   ├──__init__.py
+|   ├──api/
+│   ├── __init__.py
+│   ├── api_user.py
+│   ├── api_place.py
+│   ├── api_amenity.py
+│   ├── api_country_city.py
+│   └── api_reviews.py
+|   |
+|   |
+|   ├── models/
+│   ├── __init__.py
+│   ├── amenity.py
+│   ├── crud.py
+│   ├── city.py
+│   ├── country.py
+│   ├── place.py
+│   ├── review.py
+│   └── user.py
+|   | 
+│   |
+|   ├── persistence/
+│   ├── __init__.py
+│   ├── data_manager.py
+│   ├── country_manager.py
+│   └── persistence.py
+|   |
+|   |
+│   └── tests/
+|   ├── test_amenity.py
+|   ├── test_city.py
+|   ├── test_country.py
+|   ├── test_place.py
+|   ├── test_review.py
+|   └── test_user.py
+|   └── test_cc_api.py
+
+
+
