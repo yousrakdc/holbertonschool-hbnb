@@ -3,7 +3,6 @@ FROM python:3.10-alpine
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
-ENV PORT=5000
 
 # Create and set the working directory
 WORKDIR /hbnb
@@ -19,7 +18,7 @@ COPY . /hbnb
 VOLUME [ "/data" ]
 
 # Expose the port the app runs on
-EXPOSE 5000
+EXPOSE 8000
 
 # Run the application with Gunicorn
-CMD ["gunicorn", "-b", "127.0.0.1:5000", "hbnb.setup:app"]
+CMD ["gunicorn", "hbnb:app"]
