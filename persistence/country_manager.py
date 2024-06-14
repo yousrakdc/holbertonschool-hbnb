@@ -17,17 +17,6 @@ class CountryManager:
         with open(self.countries_file_path, 'w') as file:
             json.dump(self.available_countries, file, indent=4)
 
-    def create_country(self, country: Country):
-        if not isinstance(country, Country):
-            raise TypeError("Expected Country instance")
-        
-        if country.code in self.available_countries:
-            raise ValueError(f"Country with code {country.code} already exists")
-
-        self.available_countries[country.code] = country.name
-        self.save_countries_data()
-        print(f"Country with code {country.code} created.")
-
     def read_country(self, country_code):
         name = self.available_countries.get(country_code)
         if name:
@@ -36,14 +25,6 @@ class CountryManager:
         else:
             print(f"Country with code {country_code} not found.")
             return None
-
-    def update_country(self, country):
-        if country.code in self.available_countries:
-            self.available_countries[country.code] = country.name
-            self.save_countries_data()
-            print(f"Country with code {country.code} updated.")
-        else:
-            raise ValueError(f"Country with code '{country.code}' does not exist in the data store.")
 
     def delete_country(self, country_code):
         if country_code in self.available_countries:
