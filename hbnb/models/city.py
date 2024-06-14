@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from .crud import CRUD
 from hbnb.models.country import Country
-from hbnb.persistence.persistence import DataManager
+from hbnb.persistence.data_manager import DataManager
 
 class City(CRUD):
     def __init__(self, id, name, country_code):

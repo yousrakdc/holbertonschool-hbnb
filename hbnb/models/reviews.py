@@ -3,7 +3,7 @@ from datetime import datetime
 from .crud import CRUD
 from hbnb.models.user import User
 from hbnb.models.place import Place
-from hbnb.persistence.persistence import DataManager
+from hbnb.persistence.data_manager import DataManager
 
 class Review(CRUD):
     storage = {}

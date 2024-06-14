@@ -3,7 +3,7 @@
 from .crud import CRUD
 import uuid
 from datetime import datetime, timezone
-from hbnb.persistence.persistence import DataManager
+from hbnb.persistence.data_manager import DataManager
 
 
 class User(CRUD):

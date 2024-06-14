@@ -3,7 +3,7 @@ from datetime import datetime
 from .crud import CRUD
 from hbnb.models.city import City
 from hbnb.models.amenity import Amenity
-from hbnb.persistence.persistence import DataManager
+from hbnb.persistence.data_manager import DataManager
 
 class Place:
     def __init__(self, id, name, description, address, city: City, latitude, longitude, host, num_rooms, num_bathrooms, price_per_night, max_guests, amenities: list):

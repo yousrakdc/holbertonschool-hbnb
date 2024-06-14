@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from .crud import CRUD
-from hbnb.persistence.persistence import DataManager
+from hbnb.persistence.data_manager import DataManager
 
 class Amenity:
     def __init__(self, id, name):
