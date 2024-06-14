@@ -42,7 +42,7 @@ Hbnb/
 |   ├── test_place.py
 |   ├── test_review.py
 |   └── test_user.py
-|   └── test_user_api.py
+|   └── test_cc_api.py
 
 
 
