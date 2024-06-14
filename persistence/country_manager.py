@@ -1,5 +1,5 @@
-import json
 from models.country import Country
+import json
 
 class CountryManager:
     def __init__(self, countries_file_path='countries.json'):
@@ -17,7 +17,7 @@ class CountryManager:
         with open(self.countries_file_path, 'w') as file:
             json.dump(self.available_countries, file, indent=4)
 
-    def create_country(self, country):
+    def create_country(self, country: Country):
         if not isinstance(country, Country):
             raise TypeError("Expected Country instance")
         
