@@ -2,12 +2,11 @@ import uuid
 from datetime import datetime
 from .crud import CRUD
 from hbnb.models.country import Country
+from hbnb.persistence.persistence import DataManager
 
 class City(CRUD):
-    storage = {}
-
-    def __init__(self, name, country_code : str):
-        self.id = str(uuid.uuid4())
+    def __init__(self, id, name, country_code):
+        self.id = id
         self.name = name
         self.country_code = country_code
         self.created_at = datetime.utcnow()
@@ -16,27 +15,34 @@ class City(CRUD):
     def __repr__(self):
         return f"<City {self.name}>"
 
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'country_code': self.country_code,
+            'created_at': self.created_at.isoformat(),
+            'updated_at': self.updated_at.isoformat()
+        }
+
     @classmethod
-    def create(self, name, country_code):
+    def create(cls, name, country_code):
         city = City(name, country_code)
-        City.storage[city.id] = city
+        id = str(uuid.uuid4())
+        DataManager('cities.json').create_city(city)
         return city
 
     @classmethod
     def read(cls, id):
-        return cls.storage.get(id)
+        return DataManager('cities.json').read_city(id)
 
-    @classmethod
-    def update(cls, id, data):
-        city = cls.storage.get(id)
-        if city:
-            for key, value in data.items():
-                if hasattr(city, key):
-                    setattr(city, key, value)
-            city.updated_at = datetime.utcnow()
-            return city
-        return None
+    @classmethod 
+    def update(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+        self.updated_at = datetime.utcnow()
+        
+        DataManager('cities.json').update_city(self)
 
     @classmethod
     def delete(cls, id):
-        return cls.storage.pop(id, None)
+        DataManager('cities.json').delete_city(id)
