@@ -2,24 +2,23 @@
 
 from .crud import CRUD
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
+from hbnb.Persistence.Persis import DataManager
 
 
 class User(CRUD):
 
-    storage = {}
-    def __init__(self, first_name, last_name, email, password):
-
-        self.id = str(uuid.uuid4())
+    def __init__(self, id, first_name, last_name, email, password):
+        self.id = id
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.password = password
         self.hosted_places = []
         self.reviews = []
-        self.created_at = datetime.utcnow()
-        self.updated_at = datetime.utcnow()
-    
+        self.created_at = datetime.now(timezone.utc)
+        self.updated_at = datetime.now(timezone.utc)
+
     def __repr__(self):
         return f"ID:{self.id}: {self.last_name}_{self.first_name}<{self.email}>"
 
@@ -37,6 +36,20 @@ class User(CRUD):
         }
     
     @classmethod
+    def from_dict(cls, json):
+        return User(json["id"], json["first_name"], json["last_name"], json["email"], json["password"])
+    
+    def is_valid_email(email):
+        return "@" in email
+
+    def email_exists(email):
+        data_manager = DataManager(file_path='data.json')
+        users = data_manager.data
+        emails = [user["email"] for user in users.values()]
+        return email in emails
+
+
+    @classmethod
     def create(cls, data):
         email = data.get("email")
         if not email:
@@ -45,26 +58,36 @@ class User(CRUD):
             raise ValueError("Invalid email format.")
         if cls.email_exists(email):
             raise ValueError(f"Email '{email}' is already taken.")
-        else:
-            user = User(**data)
-            cls.storage[user.id] = user
-            return user
+        
+        data["id"]= str(uuid.uuid4())
+        # Create a new User instance
+        user = User(**data)
+        
+        # Use DataManager to store the user
+        data_manager = DataManager(file_path='data.json')
+        data_manager.create(user)
+        
+        return user
     
     @classmethod
     def read(cls, id):
-        return cls.storage.get(id)
-
-    @classmethod
-    def update(cls, id, data):
-        user = cls.storage.get(id)
-        if user:
-            for key, value in data.items():
-                if hasattr(User, key):
-                    setattr(User, key, value)
-            user.updated_at = datetime.utcnow()
-            return user
-        return None
+        data_manager = DataManager(file_path='data.json')
+        return data_manager.read(id, cls)
     
     @classmethod
+    def update(cls, id, data):
+        # Update instance attributes
+        data_manager = DataManager(file_path='data.json')
+        user = data_manager.read(id, cls)
+        for key, value in data.items():
+            setattr(user, key, value)
+        user.updated_at = datetime.utcnow()
+        
+        # Use DataManager to update the user
+        data_manager.update(user)
+        return user
+
+    @classmethod
     def delete(cls, id):
-        return cls.storage.pop(id, None)
+        data_manager = DataManager(file_path='data.json')
+        data_manager.delete(id, cls)
