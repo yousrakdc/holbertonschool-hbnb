@@ -1,12 +1,11 @@
 from typing import Dict, Any, Type
 import json
 
-file_path = 'data.json'
 
 class DataManager:
     def __init__(self, file_path):
         self.file_path = file_path
-        self.storage = {}
+        self.storage : Dict[Type, Dict[int, Any]] = {}
 
     def save(self, entity: Any) -> None:
         entity_type = type(entity)
@@ -54,4 +53,5 @@ class DataManager:
                     self.storage[entity_type] = {}
                 self.storage[entity_type][int(entity_id)] = entity
 
+file_path = 'data.json'
 data_manager = DataManager(file_path)
