@@ -35,6 +35,7 @@ class Amenity:
     def read(cls, id):
         return DataManager('amenities.json').read(id, Amenity)
 
+    @classmethod 
     def update(self, data):
         for key, value in data.items():
             setattr(self, key, value)

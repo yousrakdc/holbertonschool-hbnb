@@ -66,6 +66,8 @@ class Place:
         data_manager = DataManager(file_path='data.json')
         return data_manager.read(id, cls)
 
+    
+    @classmethod
     def update(self, data):
         # Update instance attributes
         for key, value in data.items():

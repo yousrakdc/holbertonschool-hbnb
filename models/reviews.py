@@ -75,4 +75,11 @@ class Review(CRUD):
 
     @classmethod
     def get_all_reviews(cls):
-        return DataManager().get_all(cls)
+        reviews_data = DataManager().get_all(cls)
+        reviews = []
+        for review_data in reviews_data:
+            user = User.from_dict(review_data['user'])
+        place = Place.from_dict(review_data['place'])
+        review = Review(user, place, review_data['rating'], review_data['comment'])
+        reviews.append(review)
+        return reviews

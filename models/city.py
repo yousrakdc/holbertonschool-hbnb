@@ -33,6 +33,7 @@ class City(CRUD):
     def read(cls, id):
         return CityManager('cities.json').read_city(id)
 
+    @classmethod 
     def update(self, data):
         for key, value in data.items():
             setattr(self, key, value)
