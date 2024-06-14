@@ -22,8 +22,8 @@ class Amenity:
 
     @classmethod
     def get_all_amenities(cls):
-        # This method would typically fetch from the data storage, which is managed by DataManager
-        raise NotImplementedError("Method not implemented for this context.")
+        amenities = DataManager('amenities.json').get_all(Amenity)
+        return amenities
 
     @classmethod
     def create(cls, data):
@@ -33,14 +33,19 @@ class Amenity:
 
     @classmethod
     def read(cls, id):
-        return DataManager('amenities.json').read(id, Amenity)
+        amenity = DataManager('amenities.json').read(id, Amenity)
+        if amenity is None:
+            raise ValueError("Amenity not found")
+        return amenity
 
-    @classmethod 
-    def update(self, data):
+    
+    def update(cls, id, data):
+        amenity = cls.read(id)
         for key, value in data.items():
-            setattr(self, key, value)
-        self.updated_at = datetime.utcnow()
-        DataManager('amenities.json').update(self)
+            setattr(amenity, key, value)
+        amenity.updated_at = datetime.utcnow()
+        DataManager('amenities.json').update(amenity)
+        return amenity
 
     @classmethod
     def delete(cls, id):
