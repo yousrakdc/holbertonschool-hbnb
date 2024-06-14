@@ -26,8 +26,9 @@ class Amenity(CRUD):
     @classmethod
     def create(cls, data):
         amenity = Amenity(**data)
-        Amenity.storage[amenity.id] = amenity
-        return amenity
+        new_amenity = Amenities(name=data['name'])
+        amenity_data_manager.create(new_amenity)
+        return new_amenity.to_dict(), 201
 
     @classmethod
     def read(cls, id):
