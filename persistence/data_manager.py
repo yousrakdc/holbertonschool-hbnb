@@ -1,57 +1,57 @@
-from typing import Dict, Any, Type
 import json
-
+from datetime import datetime
 
 class DataManager:
     def __init__(self, file_path):
         self.file_path = file_path
-        self.storage : Dict[Type, Dict[int, Any]] = {}
+        self.data = {}
+        self.load_data()
 
-    def save(self, entity: Any) -> None:
-        entity_type = type(entity)
-        entity_id = entity.id  # Assuming each entity has a unique 'id' attribute
-        if entity_type not in self.storage:
-            self.storage[entity_type] = {}
-        self.storage[entity_type][entity_id] = entity
-
-    def get(self, entity_id: int, entity_type: Type) -> Any:
-        if entity_type not in self.storage or entity_id not in self.storage[entity_type]:
-            raise KeyError(f"Entity of type {entity_type.__name__} with id {entity_id} not found")
-        return self.storage[entity_type][entity_id]
-
-    def update(self, entity: Any) -> None:
-        entity_type = type(entity)
-        entity_id = entity.id  # Assuming each entity has a unique 'id' attribute
-        if entity_type not in self.storage or entity_id not in self.storage[entity_type]:
-            raise KeyError(f"Entity of type {entity_type.__name__} with id {entity_id} not found")
-        self.storage[entity_type][entity_id] = entity
-
-    def delete(self, entity_id: int, entity_type: Type) -> None:
-        if entity_type not in self.storage or entity_id not in self.storage[entity_type]:
-            raise KeyError(f"Entity of type {entity_type.__name__} with id {entity_id} not found")
-        del self.storage[entity_type][entity_id]
-
-    def save_to_file(self, filepath: str) -> None:
-        data = {}
-        for entity_type, entities in self.storage.items():
-            data[entity_type.__name__] = {entity_id: entity.to_dict() for entity_id, entity in entities.items()}
-        with open(filepath, 'w') as f:
-            json.dump(data, f)
-
-    def load_from_file(self, filepath: str) -> None:
+    def load_data(self):
         try:
-            with open(filepath, 'r') as f:
-                data = json.load(f)
+            with open(self.file_path, 'r') as file:
+                self.data = json.load(file)
         except FileNotFoundError:
-            raise FileNotFoundError(f"The file {filepath} does not exist")
+            self.save_data()
 
-        for entity_type_name, entities in data.items():
-            entity_type = classes[entity_type_name]
-            for entity_id, entity_data in entities.items():
-                entity = entity_type.from_dict(entity_data)
-                if entity_type not in self.storage:
-                    self.storage[entity_type] = {}
-                self.storage[entity_type][int(entity_id)] = entity
+    def save_data(self):
+        with open(self.file_path, 'w') as file:
+            serialized_data = {str(key): value for key, value in self.data.items()}
+            json.dump(serialized_data, file, indent=4)
 
-file_path = 'data.json'
-data_manager = DataManager(file_path)
+    def create(self, entity):
+        if not hasattr(entity, 'id'):
+            raise AttributeError("Entity must have an 'id' attribute.")
+        
+        key = f"{entity.id}_{type(entity).__name__}"
+        self.data[key] = entity.to_dict()
+        self.save_data()
+        print(f"Entity {type(entity).__name__} with ID {entity.id} created.")
+
+    def read(self, entity_id, entity_class):
+        key = f"{entity_id}_{entity_class.__name__}"
+        data = self.data.get(key)
+        if data:
+            print(f"Entity {entity_class.__name__} with ID {entity_id} retrieved.")
+            return entity_class.from_dict(data)
+        else:
+            print(f"Entity {entity_class.__name__} with ID {entity_id} not found.")
+            return None
+
+    def update(self, entity):
+        key = f"{entity.id}_{type(entity).__name__}"
+        if key in self.data:
+            self.data[key] = entity.to_dict()
+            self.save_data()
+            print(f"Entity {type(entity).__name__} with ID {entity.id} updated.")
+        else:
+            raise ValueError(f"Entity with key '{key}' does not exist in the data store.")
+
+    def delete(self, entity_id, entity_class):
+        key = f"{entity_id}_{entity_class.__name__}"
+        if key in self.data:
+            del self.data[key]
+            self.save_data()
+            print(f"Entity {entity_class.__name__} with ID {entity_id} deleted.")
+        else:
+            print(f"Entity {entity_class.__name__} with ID {entity_id} not found. Deletion failed.")
