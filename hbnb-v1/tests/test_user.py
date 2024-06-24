@@ -1,0 +1,72 @@
+#!/usr/bin/python3
+
+"""
+Module with unittests for User class 
+"""
+
+import unittest
+from models.user import User
+
+class TestUser(unittest.TestCase):
+    """
+    Test class for User class
+    """
+
+    def test_create_user(self):
+        """
+        Check if the instantiation of user object works properly
+        """
+        user = User()
+        self.assertIsInstance(user, User)
+
+    def test_initiate_user(self):
+        """
+        Test if attributes are initialized to empty strings
+        """
+        user = User()
+        self.assertEqual(user.email, "")
+        self.assertEqual(user.password, "")
+        self.assertEqual(user.first_name, "")
+        self.assertEqual(user.last_name, "")
+
+    def test_set_valid_user_attributes(self):
+        """
+        Test setting valid attributes to an User instance
+        """
+        user = User()
+        user.email = "super_mario@mushroom.com"
+        user.password = "B0wserIsL@me"
+        user.first_name = "Mario"
+        user.last_name = "Jumpman"
+
+        self.assertEqual(user.email, "super_mario@mushroom.com")
+        self.assertEqual(user.password, "B0wserIsL@me")
+        self.assertEqual(user.first_name, "Mario")
+        self.assertEqual(user.last_name, "Jumpman")
+
+
+if __name__ == "__main__":
+    unittest.main()
+
+# Check if the ID ALWAYS stays the same
+
+# Check if the created_at value ALWAYS stays the same after creation and updating
+# (for example after update_at changes)
+
+# Create user with invalid name
+# => rules for valid first_name and last_name
+# invalid name type (not a string)
+
+# Create user with invalid email
+# => rules for valid email
+# 	invalid email type (not a string)
+
+
+# Invalid password
+# => rules for valid password
+# 	invalid password type (not a string)
+
+
+# Create two different users with the same email adress
+
+# Remove a user

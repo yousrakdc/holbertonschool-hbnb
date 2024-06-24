@@ -1,0 +1,64 @@
+We're trying to create a simple website cloning airbnb for a school project, and right now one of the task is to put the project in docker, but I don't understand how, even after reading the instructions. Can you explain to me simply how to proceed ? 
+
+Here are the instructions : 
+"
+In this task, you will containerize your application using Docker. Containerization is essential for ensuring that your application runs consistently across different environments. You’ll use Alpine Linux to keep the image size small and configure Gunicorn as the application server, enhancing your application’s scalability and performance.
+
+Objectives :
+
+    -Create a Dockerfile: Define the process for building your Flask application into a Docker container using Alpine Linux and configuring it with Gunicorn.
+    -Manage Application Port via Environment Variables: Enable configuration of the application’s port through environment variables for flexibility.
+    -Implement Data Persistence: Set up a Docker volume to persist application data, ensuring data is maintained across container restarts.
+
+Requirements :
+
+    -Dockerfile: Create a Dockerfile that details the environment setup, including application dependencies and server configurations.
+    -Environment Variables: Use environment variables to manage configurations like the application port.
+    -Persistent Volume: Configure a Docker volume that will be used to store and persist application data.
+
+Instructions :
+
+1.Creating Your Dockerfile:
+    -Start with an appropriate Alpine Linux base image with Python. Check you’re using the correct Python version.
+    -Copy the application source code into the container.
+
+2.Managing Dependencies:
+    -Utilize a requirements.txt to manage Python dependencies. Structure your Dockerfile to make use of Docker’s caching by installing dependencies before copying the application code.
+
+3.Configuring Gunicorn:
+    -Set Gunicorn as the command in your Dockerfile, making sure to bind it to the correct port using an environment variable.
+
+4.Setting Up Environment Variables:
+    -Define an environment variable for the port in your Dockerfile. Provide documentation on how to override this when running the container if different settings are needed.
+
+5.Implementing Persistent Storage:
+    -Define a volume in your Dockerfile where your application will store its persistent data. This might include database files, configuration files, logs, etc.
+    -Use the VOLUME Dockerfile instruction to specify the storage directory in the container.
+    -When running the container, use the -v or --volume option to specify the mount point of the volume on the host system, ensuring data persists beyond the lifecycle of a single container.
+
+6.Building and Running Your Container:
+    -Use the docker build command to build an image from your Dockerfile.
+    -Once the image is built, use the docker run command to start a container from this image.
+    -Map the container port to a port on your host machine to access the API from outside the container.
+    -Pass environment variables from your external configuration file into the container at runtime.
+
+7.Testing and Verification:
+    -Test the container by accessing the application through the mapped port to ensure that it is set up correctly and functioning as expected.
+
+Resources:
+
+    -Docker Official Documentation: Docker Docs (https://docs.docker.com/) provide detailed instructions on Dockerfile syntax, building images, and running containers.
+    -Gunicorn Configuration: The Gunicorn documentation (https://docs.gunicorn.org/en/stable/configure.html) offers insights on various flags and settings for running Flask applications.
+    -Alpine Linux Documentation: For understanding how to manage packages on Alpine, the Alpine Linux Wiki (https://wiki.alpinelinux.org/wiki/Main_Page) is a great resource.
+    -Docker Volumes: Explore the Manage data in Docker documentation (https://docs.docker.com/storage/) to understand how to configure and manage volumes.
+    -Dockerfile Best Practices: Refer to the Docker documentation on best practices (https://docs.docker.com/build/building/best-practices/) for writing Dockerfiles.
+
+Deliverables:
+
+    -A Dockerfile that sets up your Flask application with Gunicorn on Alpine Linux, including persistent data storage.
+    -Documentation outlining how to build and run your Docker container, including how to configure the volume for data persistence.
+
+Repo:
+
+    GitHub repository: holbertonschool-hbnb
+"
